@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/kakaodb   # DB 이름에 맞게 변경
+    username: postgres                                # DB 유저
+    password: lifesheep                                   # 비밀번호
+  jpa:
+    hibernate:
+      ddl-auto: update       # 개발 단계: update, 나중엔 validate 또는 none
+    show-sql: true            # 실행되는 SQL 로그 보기
+
+server:
+  port: 8080
