@@ -29,10 +29,21 @@ public class SecurityConfig {
 
                 // 인증·인가 정책
                 .authorizeHttpRequests(auth -> auth
-                        // 회원가입과 사용자 조회는 모두에게 허용
+                        // 사용자 API
                         .requestMatchers(HttpMethod.POST,   "/api/users").permitAll()
                         .requestMatchers(HttpMethod.GET,    "/api/users/**").permitAll()
-                        // 그 외 모든 요청은 인증 필요
+
+                        // 친구 요청 API (인증 없이 허용)
+                        .requestMatchers(HttpMethod.POST,   "/api/friends/requests").permitAll()
+                        .requestMatchers(HttpMethod.GET,    "/api/friends/requests/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT,    "/api/friends/requests/**").permitAll()
+
+                        // Friendship API 공개
+                        .requestMatchers(HttpMethod.POST,   "/api/friends/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,    "/api/friends/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/friends/**").permitAll()
+
+                        // 그 외는 인증 필요
                         .anyRequest().authenticated()
                 )
 

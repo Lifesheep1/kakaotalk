@@ -16,10 +16,12 @@ import java.util.Optional;
 public class FriendRequestServiceImpl implements FriendRequestService {
     private final FriendRequestRepository friendRequestRepository;
     private final UserRepository userRepository;
+    private final FriendshipService friendshipService;
 
-    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserRepository userRepository) {
+    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserRepository userRepository, FriendshipService friendshipService) {
         this.friendRequestRepository = friendRequestRepository;
         this.userRepository = userRepository;
+        this.friendshipService = friendshipService;
     }
 
     @Override
@@ -66,8 +68,19 @@ public class FriendRequestServiceImpl implements FriendRequestService {
         if (!List.of("ACCEPTED","REJECTED").contains(status)) {
             throw new IllegalArgumentException("Invalid status");
         }
+
+        //상태 업데이트
         req.setStatus(status);
-        return friendRequestRepository.save(req);
+        req = friendRequestRepository.save(req);
+
+        //수락 시점에 양방향 친구관계 생성
+        if(status.equals("ACCEPTED")) {
+            Long senderId = req.getSender().getUserId();
+            Long receiverId = req.getReceiver().getUserId();
+            friendshipService.addFriend(senderId, receiverId);
+        }
+
+        return req;
     }
 
 
