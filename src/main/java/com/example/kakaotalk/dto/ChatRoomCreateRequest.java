@@ -8,10 +8,10 @@ import java.util.List;
 /**
  * 채팅방 생성 요청 DTO
  * @param roomType
- * @param membersIds
+ * @param memberIds
  */
 public record ChatRoomCreateRequest(
         @NotNull String roomType,
-        @NotEmpty List<Long> membersIds
+        @NotEmpty List<Long> memberIds
 ) {
 }

@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/chatrooms")
+@RequestMapping("/api/rooms")
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     public ChatRoomController(ChatRoomService chatRoomService) {
@@ -26,12 +28,24 @@ public class ChatRoomController {
     @PostMapping
     public ResponseEntity<ChatRoomResponse> createRoom(
             @Valid @RequestBody ChatRoomCreateRequest request) {
-        ChatRoom chatRoom = chatRoomService.createChatRoom(request.roomType(), request.membersIds());
+        ChatRoom chatRoom = chatRoomService.createChatRoom(request.roomType(), request.memberIds());
         ChatRoomResponse response = ChatRoomResponse.of(chatRoom);
-        return ResponseEntity.created(URI.create("/api/chatrooms/" + chatRoom.getRoomId()))
+        return ResponseEntity.created(URI.create("/api/rooms/" + chatRoom.getRoomId()))
                 .body( response);
     }
 
+    /**
+     * 유저가 속한 채팅방 목록 조회
+     */
+
+    @GetMapping
+    public ResponseEntity<List<ChatRoomResponse>> listRooms(
+            @RequestParam Long userId) {
+        List<ChatRoomResponse> list = chatRoomService.getRoomsForUser(userId).stream()
+                .map(ChatRoomResponse::of)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
     /**
      * 채팅방에 유저 초대
      * @param roomId
